@@ -1,0 +1,318 @@
+<html>
+<h1>Leetcode Stats</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }}
+        </p>
+        <p>
+            {{ form.companyname.label }}<br>
+            {{ form.companyname(size=32) }}
+        </p>
+        <p>{{ form.submit() }}</p>
+
+
+    </form>
+
+<h2>Stats</h2>
+
+<h3>Question Type</h3>
+
+<ul>
+{% for data in tag %}
+  <li>{{ data[0]}} {{ data[1]}} {{ data[2]}}</li>
+{% endfor %}
+</ul>
+
+<h3>Question Difficulty</h3>
+
+<ul>
+{% for data in diff %}
+  <li>{{ data[0]}} {{ data[1]}} {{ data[2]}}</li>
+{% endfor %}
+</ul>
+
+<h3>Company</h3>
+
+<ul>
+{% for data in company_html %}
+  <li>{{ data[0]}} {{ data[1]}} {{ data[2]}}</li>
+{% endfor %}
+</ul>
+
+<h3>Question Suggestions</h3>
+
+{{test3}}
+
+{% for data in suggestions %}
+  <li><a href = "http://leetcode.com{{data[1]}}"> {{data[0]}}<a/></li>
+{% endfor %}
+</ul>
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Leetcode Dashboard</title>
+  </head>
+  <style>
+  #container {
+        text-align: center;
+      }
+
+      button {
+        display: inline-block;
+      }
+</style>
+
+  <body>
+	<!-- As a heading -->
+	<nav class="navbar navbar-light bg-light">
+	  <span class="navbar-brand mb-0 h1">LeetDash</span>
+	</nav>
+
+	<div class="jumbotron">
+	  <h1 align="center" class="display-4">Your Next Question is:</h1>
+
+    <div id="container">
+      <button onclick = "prev()">Previous</button>
+      <a id = "prob" href = "http://leetcode.com{{suggestions[0][1]}}">{{suggestions[0][0]}}</a>
+      <button onclick = "next()">Next</button>
+    </div>
+
+
+
+
+
+    <script>
+    var x = 0
+    var suggestions = {{suggestions|tojson|safe}}
+    function prev() {
+      x--
+      document.getElementById("prob").innerHTML = suggestions[x][0];
+      var link = document.getElementById("abc");
+      link.setAttribute("href", "http://leetcode.comsuggestions[x][1]");
+    }
+    function next() {
+      x++
+      document.getElementById("prob").innerHTML = suggestions[x][0];
+      var link = document.getElementById("abc");
+      link.setAttribute("href", "http://leetcode.comsuggestions[x][1]");
+    }
+    </script>
+
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+    <tr>
+      <th scope="col">Question Name</th>
+      <th scope="col">Type</th>
+      <th scope="col">Times Attempted</th>
+      <th scope="col">Passed?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!--
+<tr>
+..
+</tr>
+-->
+
+  </tbody>
+  </table>
+</div>
+
+
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <title>My Chart.js Chart</title>
+</head>
+<body>
+  <div class="container">
+    <canvas id="myChart"></canvas>
+    <canvas id="myChart1"></canvas>
+    <canvas id="myChart2"></canvas>
+  </div>
+
+  <script>
+
+  let myChart = document.getElementById('myChart').getContext('2d');
+
+  // Global Options
+  Chart.defaults.global.defaultFontFamily = 'Lato';
+  Chart.defaults.global.defaultFontSize = 18;
+  Chart.defaults.global.defaultFontColor = '#777';
+
+  let QuestionType = new Chart(myChart, {
+    type:'bar', // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+    data:{
+      labels: {{labels|tojson}},
+      datasets: [
+      {
+          label: "Right",
+          backgroundColor: "rgba(0,255,0,1)",
+          data: {{right}},
+
+
+
+      },
+      {
+          label: "Wrong",
+          backgroundColor: "rgba(255,0,0,1)",
+          data: {{wrong}},
+
+      },
+
+
+  ]
+
+
+    },
+    options: {
+      title: {
+          display: true,
+          text: 'Question Type Results'
+      },
+  scales: {
+      yAxes: [{
+          ticks: {
+              beginAtZero: true
+          }
+      }]
+  }
+}
+
+  });
+
+  let myChart1 = document.getElementById('myChart1').getContext('2d');
+
+  // Global Options
+  Chart.defaults.global.defaultFontFamily = 'Lato';
+  Chart.defaults.global.defaultFontSize = 18;
+  Chart.defaults.global.defaultFontColor = '#777';
+
+  let QuestionDifficultlyChart = new Chart(myChart1, {
+    type:'bar', // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+    data:{
+      labels: {{labels1|tojson}},
+      datasets: [
+      {
+          label: "Right",
+          backgroundColor: "rgba(0,255,0,1)",
+          data: {{right1}},
+
+
+
+      },
+      {
+          label: "Wrong",
+          backgroundColor: "rgba(255,0,0,1)",
+          data: {{wrong1}},
+
+      },
+
+
+  ]
+
+
+    },
+    options: {
+      title: {
+          display: true,
+          text: 'Question Difficultly Results'
+      },
+  scales: {
+      yAxes: [{
+          ticks: {
+              beginAtZero: true
+          }
+      }]
+  }
+  }
+
+  });
+
+  let myChart2 = document.getElementById('myChart2').getContext('2d');
+
+  // Global Options
+  Chart.defaults.global.defaultFontFamily = 'Lato';
+  Chart.defaults.global.defaultFontSize = 18;
+  Chart.defaults.global.defaultFontColor = '#777';
+
+  let CompanyChart = new Chart(myChart2, {
+    type:'bar', // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+    data:{
+      labels: {{labels2|tojson}},
+      datasets: [
+      {
+          label: "Right",
+          backgroundColor: "rgba(0,255,0,1)",
+          data: {{right2}},
+
+
+
+      },
+      {
+          label: "Wrong",
+          backgroundColor: "rgba(255,0,0,1)",
+          data: {{wrong2}},
+
+      },
+
+
+  ]
+
+
+    },
+    options: {
+      title: {
+          display: true,
+          text: 'Company Results'
+      },
+  scales: {
+      yAxes: [{
+          ticks: {
+              beginAtZero: true
+          }
+      }]
+  }
+  }
+
+  });
+
+
+  </script>
+</body>
+</html>
+
+
+</html>
