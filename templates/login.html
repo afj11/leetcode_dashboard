@@ -7,8 +7,12 @@
             {{ form.username(size=32) }}
         </p>
         <p>
-            {{ form.companyname.label }}<br>
-            {{ form.companyname(size=32) }}
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}
+        </p>
+        <p>
+            {{ form.num_company.label }}<br>
+            {{ form.num_company(size=32) }}
         </p>
         <p>{{ form.submit() }}</p>
 
@@ -95,30 +99,26 @@
     var x = 0
     var suggestions = {{suggestions|tojson|safe}}
     function prev() {
-      x--
+    //  if (x > 0){
+
+        x--
+      //}
       document.getElementById("prob").innerHTML = suggestions[x][0];
       var link = document.getElementById("abc");
       link.setAttribute("href", "http://leetcode.comsuggestions[x][1]");
     }
     function next() {
-      x++
+    //  if (x < num){
+
+        x++
+    //  }
       document.getElementById("prob").innerHTML = suggestions[x][0];
       var link = document.getElementById("abc");
       link.setAttribute("href", "http://leetcode.comsuggestions[x][1]");
     }
     </script>
 
-<div class="table-wrap">
-  <table class="table">
-    <thead>
-    <tr>
-      <th scope="col">Question Name</th>
-      <th scope="col">Type</th>
-      <th scope="col">Times Attempted</th>
-      <th scope="col">Passed?</th>
-    </tr>
-  </thead>
-  <tbody>
+
     <!--
 <tr>
 ..

@@ -1,0 +1,14 @@
+flask
+forms
+bs4
+requests
+selenium
+time
+itertools
+collections
+pandas
+operator
+pickle
+random
+flask_wtf
+wtforms

@@ -14,22 +14,208 @@ import matplotlib.pyplot as plt
 import operator
 import pickle
 import json
+from random import shuffle
+from selenium.webdriver.common.keys import Keys
 
+load = False
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
 
 @app.route("/",methods=['GET','POST'])
+
 def home():
     form = LoginForm()
-    if True:#form.validate_on_submit():
-        print(form.username.data)
+    if form.validate_on_submit():
+        options = webdriver.ChromeOptions();
+        ##options.add_argument('headless');
+        browser = webdriver.Chrome(options = options)
+        url = 'https://leetcode.com/accounts/login/'
+        browser.get(url)
+        time.sleep(10)
+        a = browser.find_elements_by_class_name("input__2W4f")
+        t = str(form.username)
+        print(t)
+        print(type(t))
+        t = str(form.password)
+        print(t)
+        print(type(t))
+        a[0].send_keys(str(form.username.data))
+        a[1].send_keys(str(form.password.data))
+        time.sleep(5)
+        c = browser.find_elements_by_class_name("btn-content-container__214G")
+        c[0].click()
+        time.sleep(10)
+        browser.get('https://leetcode.com/submissions/#/1')
+        time.sleep(5)
+        innerHTML = browser.execute_script("return document.body.innerHTML")
+        page_data = BeautifulSoup(innerHTML, features = "html.parser")
+        table_data = page_data.find_all("tbody")
 
-        with open('submissions.pkl', 'rb') as f:
-            submissions = pickle.load(f)
+        if(table_data == []):
+            l = 'wrong password or username'
+            return render_template('login2.html', form=form, l = l)
+        all = []
+
+        count_var = 2
+        while page_data.find_all("div", class_ = "placeholder-text") == []:
+            table_info = []
+            for data in table_data:
+                td = data.find_all("td")
+                values = []
+
+                for data in td:
+                    if(data.find_all("a") != []):
+                        table_info.append(data.find_all("a")[0].get("href"))
+                    table_info.append(data.text)
+            table_info = [x.replace('\xa0',' ')  for x in table_info]
+            table_info = [x.strip() for x in table_info]
+            table_info = [table_info[x:x+6] for x in range(0, len(table_info),6)]
+            # print(table_info)
+            # print()
+            all.append(table_info)
+            url = 'https://leetcode.com/submissions/#/' + str(count_var)
+            browser.get(url)
+            time.sleep(6)
+            innerHTML = browser.execute_script("return document.body.innerHTML")
+            page_data = BeautifulSoup(innerHTML, features = "html.parser")
+            table_data = page_data.find_all("tbody")
+            count_var += 1
+
+        submissions = all
+
+        # options = webdriver.ChromeOptions();
+        # ##options.add_argument('headless');
+        # browser = webdriver.Chrome(options = options) #replace with .Firefox(), or with the browser of your choice
+        # url = 'https://leetcode.com/accounts/login/'
+        # browser.get(url)
+        # time.sleep(15)
+        # a = browser.find_elements_by_class_name("input__2W4f")
+        # a[0].send_keys('afjlc')
+        # a[1].send_keys("AFJLCpaswd314155")
+        # time.sleep(5)
+        # c = browser.find_elements_by_class_name("btn-content-container__214G")
+        # c[0].click()
+        # time.sleep(10)
+        # ##browser.get('https://leetcode.com/problemset/all/?status=Solved')
+        # browser.find_element_by_xpath("//select[@class='form-control']/option[text()='all']").click()
+        # time.sleep(8)
+        # innerHTML = browser.execute_script("return document.body.innerHTML")
+        # problems_html = BeautifulSoup(innerHTML, features = "html.parser")
+        # table_data = problems_html.find_all("tbody", class_ = "reactable-data")
+        #
+        # info = []
+        #
+        # for data in table_data:
+        #     a = data.find_all("a")
+        #     tr = data.find_all("tr")
+        #     for data in tr:
+        #         td = data.find_all("td")
+        #         problem_data = []
+        #         for data in td:
+        #             problem_data.append(data)
+        #         problem_data= problem_data[2:7]
+        #         problem_data.append(problem_data[0].find_all("a")[0].get("href"))
+        #         problem_data[0] = problem_data[0].text.strip()
+        #
+        #         test = problem_data[1].find_all("a")
+        #         if test:
+        #             problem_data[1] = test[0].get("href")
+        #         else:
+        #             problem_data[1] = test
+        #         problem_data[2] = problem_data[2].text
+        #         problem_data[3] = problem_data[3].text
+        #         problem_data[4] = problem_data[4]['value']
+        #         info.append(problem_data)
+
+
+
+        # with open('all_info.pkl', 'wb') as f:
+        #     pickle.dump(info, f)
+
+        # num = len(info)
+        # all = []
+        # cc = 1
+        #
+        # error_count = 0
+        # for data in info:
+        #     while True:
+        #         try:
+        #             print("trying")
+        #             main = []
+        #             browser.get('https://leetcode.com' + str(data[-1]))
+        #             time.sleep(9)
+        #             innerHTML = browser.execute_script("return document.body.innerHTML")
+        #             page_data = BeautifulSoup(innerHTML, features = "html.parser")
+        #             likes = page_data.find_all("button", class_ = "btn__r7r7 css-1rdgofi")
+        #
+        #
+        #             like_dislike = []
+        #             for data in likes:
+        #                 span = data.find_all("span")[0].text
+        #                 like_dislike.append(span)
+        #             like_dislike = like_dislike[0:2]
+        #             main.append(like_dislike)
+        #
+        #             # drop_down = browser.find_element_by_css_selector(".icon__3Su4.css-1ehpd12")
+        #             # print(drop_down)
+        #             # print("got here 2")
+        #             # time.sleep(3)
+        #             # drop_down.click()
+        #             # time.sleep(3)
+        #             # more = browser.find_elements_by_class_name("btn-content__lOBM")
+        #             # print("got here 3")
+        #             # if len(more) >= 23:
+        #             #     more[22].click()
+        #             #     time.sleep(2)
+        #             #     print("got here 4")
+        #             innerHTML = browser.execute_script("return document.body.innerHTML")
+        #             page_data = BeautifulSoup(innerHTML, features = "html.parser")
+        #             company = page_data.find_all("div", class_ = "company-tag-wrapper__1rBy")
+        #
+        #
+        #             freq = []
+        #             for data in company:
+        #                a = data.find_all("a")
+        #                for data in a:
+        #                    x = data.get("href")
+        #                    a = data.text.split("|")
+        #                    freq.append(a)
+        #
+        #             main.append(freq)
+        #
+        #             topic = []
+        #
+        #             related_topics = page_data.find_all("div", class_ = "css-1hky5w4")
+        #             for data in related_topics:
+        #                a = data.find_all("a", class_ = "topic-tag__1jni")
+        #                for data in a:
+        #                     topic.append(data.text)
+        #
+        #             main.append(topic)
+        #             all.append(main)
+        #             print(all)
+        #             print(cc, num)
+        #             cc+=1
+        #             break
+        #         except:
+        #             print("test")
+        #             time.sleep(5)
+        #             pass
+
+
+
+
+        # with open('submissions.pkl', 'rb') as f:
+        #     submissions = pickle.load(f)
+
 
 
 
         submissions = list(itertools.chain.from_iterable(submissions))
+
+        print(submissions)
+        names2 = [x[1] for x in submissions]
+        print(names2)
 
         right = []
         wrong = []
@@ -40,10 +226,13 @@ def home():
             else:
                 wrong.append(data[1])
 
-        with open('question_basic.pkl', 'rb') as f:
+        with open('all_info.pkl', 'rb') as f:
            question_basic = pickle.load(f)
 
-        with open('question_data.pkl', 'rb') as f:
+
+
+
+        with open('full_q_data.pkl', 'rb') as f:
              question_data = pickle.load(f)
 
 
@@ -67,6 +256,8 @@ def home():
             for val in data[1]:
                 temp.append(val[0])
             company_list.append(temp)
+
+
 
         data = {'likes': [int(question_data[i][0][0]) for i in range(len(question_data))],
              'dislikes': [int(question_data[i][0][1]) for i in range(len(question_data))],
@@ -96,7 +287,6 @@ def home():
             for val1 in val[2]:
                 df[val1][names[count]] = 1
 
-
         tag_right_count = []
         tag_wrong_count = []
 
@@ -124,7 +314,6 @@ def home():
         for data in wrong:
             tag_wrong_count.append(df['tag_list'][data])
 
-
         comp_right_count = list(itertools.chain.from_iterable(comp_right_count))
         comp_wrong_count = list(itertools.chain.from_iterable(comp_wrong_count))
 
@@ -136,10 +325,8 @@ def home():
 
         del_list = []
 
-
-
         for data in comp_right_freq:
-            if (comp_right_freq[data] + comp_wrong_freq[data]) < 10:
+            if (comp_right_freq[data] + comp_wrong_freq[data]) <= form.num_company.data:
                 del_list.append(data)
 
         for data in del_list:
@@ -172,8 +359,6 @@ def home():
 
         comp_ratio = sorted(comp_ratio.items(), key=operator.itemgetter(1), reverse = True)
 
-        #print(comp_ratio)
-
         tag_ratio = sorted(tag_ratio.items(), key=operator.itemgetter(1), reverse = True)
 
         diff_ratio = sorted(diff_ratio.items(), key=operator.itemgetter(1), reverse = True)
@@ -196,81 +381,98 @@ def home():
         for data in comp_ratio_str:
             company_html.append(data)
 
-        with open('other_question_basic.pkl', 'rb') as f:
-           other_question_basic = pickle.load(f)
-
-        with open('other_question_data.pkl', 'rb') as f:
-             other_question_data = pickle.load(f)
-
-        other_names = [x[0] for x in other_question_basic]
-
-        company = set()
-        for data in other_question_data:
-            for comp in data[1]:
-                company.add(comp[0])
-
-        tags = set()
-        for data in other_question_data:
-            for t in data[2]:
-                for data in t:
-                    tags.add(t)
-
-        company_list = []
-        for data in other_question_data:
-            temp = []
-            for val in data[1]:
-                temp.append(val[0])
-            company_list.append(temp)
-
-        data = {'likes': [int(other_question_data[i][0][0]) for i in range(len(other_question_data))],
-             'dislikes': [int(other_question_data[i][0][1]) for i in range(len(other_question_data))],
-              'article_link' : [other_question_basic[i][1] for i in range(len(other_question_basic))],
-              'accept_percent' : [other_question_basic[i][2] for i in range(len(other_question_basic))],
-             'difficultly' : [other_question_basic[i][3] for i in range(len(other_question_basic))],
-             'freq_value' : [other_question_basic[i][4] for i in range(len(other_question_basic))],
-              'problem_link' : [other_question_basic[i][5] for i in range(len(other_question_basic))],
-              'tag_list' : [other_question_data[i][2] for i in range(len(other_question_data))],
-              'company' : company_list
-}
-
-        for val in company:
-            data[val] = 0
-
-        for val in tags:
-            data[val] = 0
-
-        other_df = pd.DataFrame(data, index = other_names)
-        pd.options.mode.chained_assignment = None
-
-        for count, val in enumerate(other_question_data):
-            for val1 in val[1]:
-                other_df[val1[0]][other_names[count]] = val1[1]
-
-        for count, val in enumerate(other_question_data):
-            for val1 in val[2]:
-                other_df[val1][other_names[count]] = 1
+#         with open('other_question_basic.pkl', 'rb') as f:
+#            other_question_basic = pickle.load(f)
+#
+#         with open('other_question_data.pkl', 'rb') as f:
+#              other_question_data = pickle.load(f)
+#
+#         other_names = [x[0] for x in other_question_basic]
+#
+#         company = set()
+#         for data in other_question_data:
+#             for comp in data[1]:
+#                 company.add(comp[0])
+#
+#         tags = set()
+#         for data in other_question_data:
+#             for t in data[2]:
+#                 for data in t:
+#                     tags.add(t)
+#
+#         company_list = []
+#         for data in other_question_data:
+#             temp = []
+#             for val in data[1]:
+#                 temp.append(val[0])
+#             company_list.append(temp)
+#
+#         data = {'likes': [int(other_question_data[i][0][0]) for i in range(len(other_question_data))],
+#              'dislikes': [int(other_question_data[i][0][1]) for i in range(len(other_question_data))],
+#               'article_link' : [other_question_basic[i][1] for i in range(len(other_question_basic))],
+#               'accept_percent' : [other_question_basic[i][2] for i in range(len(other_question_basic))],
+#              'difficultly' : [other_question_basic[i][3] for i in range(len(other_question_basic))],
+#              'freq_value' : [other_question_basic[i][4] for i in range(len(other_question_basic))],
+#               'problem_link' : [other_question_basic[i][5] for i in range(len(other_question_basic))],
+#               'tag_list' : [other_question_data[i][2] for i in range(len(other_question_data))],
+#               'company' : company_list
+# }
+#
+#         for val in company:
+#             data[val] = 0
+#
+#         for val in tags:
+#             data[val] = 0
+#
+#
+#         other_df = pd.DataFrame(data, index = other_names)
+#         print(other_df)
+#         pd.options.mode.chained_assignment = None
+#
+#         for count, val in enumerate(other_question_data):
+#             for val1 in val[1]:
+#                 other_df[val1[0]][other_names[count]] = val1[1]
+#
+#         for count, val in enumerate(other_question_data):
+#             for val1 in val[2]:
+#                 other_df[val1][other_names[count]] = 1
 
         new_questions = tag_ratio[::-1]
-        #print(new_questions)
 
-        #print(tags)
+        new_questions = [x for x in new_questions if int(x[1]) < 50]
+
+
 
         questions = []
         for i in range(int(len(new_questions))):
             try:
-                questions.append(other_df[other_df[new_questions[i][0]] > 0])
+                questions.append(df[df[new_questions[i][0]] > 0])
             except:
                 pass
 
 
+
         for data in questions:
-            data.sort_values(by = ['likes'], inplace = True)
+            data.sort_values(by = ['freq_value'], inplace = True, ascending = False)
 
         suggestions = []
 
+
         for data in questions:
-            for val in data.index.values:
-                suggestions.append([val, other_df['problem_link'][val]])
+            count = 0
+            for val in enumerate(data.index.values):
+                if count == 10:
+                    break
+                print("get here???")
+                if(val[1] not in names2):
+                    print(val, "here??")
+                    suggestions.append([val[1], df['problem_link'][val[1]]])
+                    #print("here, why pls no")
+                    count+=1
+
+        shuffle(suggestions)
+
+
 
         js_labels = []
         js_values = []
@@ -278,7 +480,6 @@ def home():
         for data in tag:
             js_labels.append(data[0] + " " + data[2])
             js_values.append(data[2])
-
 
         js_val_c = []
         for data in js_values:
@@ -299,7 +500,6 @@ def home():
         for data in diff:
             js_labels1.append(data[0] + " " + data[2])
             js_values1.append(data[2])
-
 
         js_val_c1 = []
         for data in js_values1:
@@ -336,12 +536,15 @@ def home():
             js_right2.append(data[0])
             js_wrong2.append(data[1]-data[0])
 
-
         return render_template('login.html', form=form, tag=tag, diff = diff, company_html = company_html, suggestions = suggestions,
         labels = js_labels,right = js_right, wrong = js_wrong, labels1 = js_labels1, right1 = js_right1, wrong1 = js_wrong1,
         labels2 = js_labels2, right2 = js_right2, wrong2 = js_wrong2, num = len(suggestions))
-    print("test")
-    return render_template('login.html', form=form)
+    l = ''
+    global load
+    if(load):
+        l = 'Invalid Data'
+    load = True
+    return render_template('login2.html', form=form, l = l)
 
 if __name__ == "__main__":
     app.run(debug=True)
