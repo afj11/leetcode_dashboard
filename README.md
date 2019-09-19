@@ -1,5 +1,5 @@
 # Leetcode Dashboard
-Leetcode is a great website for practicing interview questions, but their statistics are lacking, and finding good questions to work on can also be a challenge.  This project scapes submission data from a user's account and generates detailed statistics and recommends questions tailored to their needs.
+Leetcode is a great website for practicing interview questions, but their statistics are lacking, and finding good questions to work on can also be a challenge.  This project scapes submission data from a user's account, generates detailed statistics and recommends questions tailored to their needs.
 # How to install
 When using flask, it is good to use a [virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/), so after setting up a virtual environment, pip install requirements.txt.  Then download a [chrome driver](https://chromedriver.chromium.org/downloads) to run the headless browser.  This [link](https://help.zenplanner.com/hc/en-us/articles/204253654-How-to-Find-Your-Internet-Browser-Version-Number-Google-Chrome) describes how to find the current chrome version and thus which version of the driver you should install.
 # How to use it
